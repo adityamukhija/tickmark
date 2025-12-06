@@ -208,3 +208,4 @@ To add a background image to the hero section on the home page:
 - Try hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
 - Check file is named correctly (`favicon.ico`)
 
+

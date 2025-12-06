@@ -32,3 +32,4 @@ export async function submitContactForm(data: {
   return { success: true, message: 'Message sent successfully' };
 }
 
+
