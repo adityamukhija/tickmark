@@ -42,11 +42,11 @@ export default function ContactPage() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-gray-900">Email</h3>
-                  <p className="text-gray-700">info@tickmark.com</p>
+                  <p className="text-gray-700">tickmark@zohomail.com</p>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-gray-900">Phone</h3>
-                  <p className="text-gray-700">+91 XXX XXX XXXX</p>
+                  <p className="text-gray-700">9911677477</p>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-gray-900">Follow Us</h3>
