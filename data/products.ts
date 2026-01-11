@@ -140,7 +140,6 @@ export const products: Product[] = [
     colors: [
       { name: 'Blue', hex: '#3B82F6', image: '/products/latex-gloves-blue.png' },
       { name: 'Black', hex: '#1F2937', image: '/products/latex-gloves-black.png' },
-      { name: 'White', hex: '#FFFFFF', image: '/products/latex-gloves-white.png' },
     ],
     links: {
       flipkart: 'https://www.flipkart.com/tick-mark-black-nitrile-gloves-powder-free-medical-grade-disposable-hand-examination/p/itm18318c6d5edf7?pid=MGVH6KAG7MCGP4EW&lid=LSTMGVH6KAG7MCGP4EWNLS51R&marketplace=FLIPKART&q=nitrile+gloves+tickmrk&store=hlc%2Fmly%2Fqbi%2F8ca&srno=s_1_1&otracker=search&otracker1=search&fm=Search&iid=en_Yzzkac2OZFPCMnP0dGGn_6qU8K-sOvfOwp6Nygg32aPrI1JIMo3UqIStpxJd6vu8TxYKNYdb_FgAAIz0cZsEmw%3D%3D&ppt=pp&ppn=pp&ssid=2ufksym62o0000001768121962817&qH=d754edaba314fd81',
@@ -156,6 +155,7 @@ export const products: Product[] = [
     colors: [
       { name: 'Blue', hex: '#3B82F6', image: '/products/latex-gloves-blue.png' },
       { name: 'Black', hex: '#1F2937', image: '/products/latex-gloves-black.png' },
+      { name: 'White', hex: '#FFFFFF', image: '/products/latex-gloves-white.png' },
     ],
     links: {
       flipkart: 'https://www.flipkart.com/tick-mark-glove-care-latex-surgical-gloves-multi-purpose-use-clinic-salon-examination/p/itmb0bcc34353982?pid=MGVH6J7FCZVQCXRN&lid=LSTMGVH6J7FCZVQCXRNXS0ATH&marketplace=FLIPKART&q=latex%5C+gloves+tickmrk&store=hlc%2Fmly%2Fqbi%2F8ca&srno=s_1_3&otracker=search&otracker1=search&fm=Search&iid=283c7641-6a46-4e13-bd7f-8066e3009a15.MGVH6J7FCZVQCXRN.SEARCH&ppt=sp&ppn=sp&ssid=5npiv5qcog0000001768122004557&qH=1876420f4a8a71a7',
