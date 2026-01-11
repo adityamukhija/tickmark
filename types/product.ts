@@ -9,7 +9,7 @@ export interface Product {
   name: string;
   description: string;
   category: 'gloves' | 'masks' | 'walking-sticks' | 'medical-supplies' | 'protective-wear';
-  subcategory?: 'industrial' | 'domestic' | 'medical';
+  subcategory?: 'industrial' | 'domestic' | 'examination';
   image: string;
   colors?: ProductColor[];
   isTopProduct?: boolean;

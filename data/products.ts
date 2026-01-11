@@ -131,10 +131,10 @@ export const products: Product[] = [
   },
   {
     id: '18',
-    name: 'Premium Latex Examination Gloves',
-    description: 'High-quality disposable latex gloves designed for medical, clinical, cleaning, food handling, and safety use. Powder-free for comfort and reduced skin irritation, suitable for sensitive skin. Strong yet flexible design providing excellent hand protection during examination, surgical assistance, or daily tasks requiring hygiene and safety. Each box contains 100 single-use disposable gloves, ideal for hospitals, clinics, laboratories, salons, and home use. Trusted for quality, durability, and comfort.',
+    name: 'Premium Nitrile Examination Gloves',
+    description: 'High-quality disposable nitrile gloves designed for medical, clinical, cleaning, food handling, and safety use. Powder-free for comfort and reduced skin irritation, suitable for sensitive skin. Strong yet flexible design providing excellent hand protection during examination, surgical assistance, or daily tasks requiring hygiene and safety. Each box contains 100 single-use disposable gloves, ideal for hospitals, clinics, laboratories, salons, and home use. Trusted for quality, durability, and comfort.',
     category: 'gloves',
-    subcategory: 'medical',
+    subcategory: 'examination',
     isTopProduct: true,
     image: '/products/latex-gloves-blue.png',
     colors: [
@@ -143,7 +143,22 @@ export const products: Product[] = [
       { name: 'White', hex: '#FFFFFF', image: '/products/latex-gloves-white.png' },
     ],
     links: {
-      flipkart: 'https://www.flipkart.com/tick-mark-blue-nitrile-gloves-powder-free-surgical-medical-examination/p/itmbeb90f11642b5?pid=MGVH9JTFAUY6DGZG&lid=LSTMGVH9JTFAUY6DGZGNLXFWB&marketplace=FLIPKART&q=tickmark+latex+gloves&store=hlc%2Fmly%2Fqbi%2F8ca&srno=s_1_2&otracker=search&otracker1=search&fm=Search&iid=en_0n-dcMhOc_95oq1mJ5CvL4-mpChiXQvqW5Fe5_FzdsWR-t7Fab-Bvqo1LPr-n0cdXkTQ5LCiX_aSI9A_zjb7rQ%3D%3D&ppt=pp&ppn=pp&ssid=elmiqn7i5s0000001768117377722&qH=cdc0462f005d2549',
+      flipkart: 'https://www.flipkart.com/tick-mark-black-nitrile-gloves-powder-free-medical-grade-disposable-hand-examination/p/itm18318c6d5edf7?pid=MGVH6KAG7MCGP4EW&lid=LSTMGVH6KAG7MCGP4EWNLS51R&marketplace=FLIPKART&q=nitrile+gloves+tickmrk&store=hlc%2Fmly%2Fqbi%2F8ca&srno=s_1_1&otracker=search&otracker1=search&fm=Search&iid=en_Yzzkac2OZFPCMnP0dGGn_6qU8K-sOvfOwp6Nygg32aPrI1JIMo3UqIStpxJd6vu8TxYKNYdb_FgAAIz0cZsEmw%3D%3D&ppt=pp&ppn=pp&ssid=2ufksym62o0000001768121962817&qH=d754edaba314fd81',
+    },
+  },
+  {
+    id: '21',
+    name: 'Premium Latex Examination Gloves',
+    description: 'High-quality disposable latex gloves designed for medical, clinical, cleaning, food handling, and safety use. Powder-free for comfort and reduced skin irritation, suitable for sensitive skin. Strong yet flexible design providing excellent hand protection during examination, surgical assistance, or daily tasks requiring hygiene and safety. Multi-purpose use for clinic, salon, and examination. Trusted for quality, durability, and comfort.',
+    category: 'gloves',
+    subcategory: 'examination',
+    image: '/products/latex-gloves-blue.png',
+    colors: [
+      { name: 'Blue', hex: '#3B82F6', image: '/products/latex-gloves-blue.png' },
+      { name: 'Black', hex: '#1F2937', image: '/products/latex-gloves-black.png' },
+    ],
+    links: {
+      flipkart: 'https://www.flipkart.com/tick-mark-glove-care-latex-surgical-gloves-multi-purpose-use-clinic-salon-examination/p/itmb0bcc34353982?pid=MGVH6J7FCZVQCXRN&lid=LSTMGVH6J7FCZVQCXRNXS0ATH&marketplace=FLIPKART&q=latex%5C+gloves+tickmrk&store=hlc%2Fmly%2Fqbi%2F8ca&srno=s_1_3&otracker=search&otracker1=search&fm=Search&iid=283c7641-6a46-4e13-bd7f-8066e3009a15.MGVH6J7FCZVQCXRN.SEARCH&ppt=sp&ppn=sp&ssid=5npiv5qcog0000001768122004557&qH=1876420f4a8a71a7',
     },
   },
   {
@@ -151,7 +166,7 @@ export const products: Product[] = [
     name: 'Disposable Polyethylene Gloves',
     description: 'High-quality disposable plastic gloves made of durable polyethylene material. 100% latex and powder-free, non-sterile, non-toxic, and hygienic with no rubber odor. Perfect for cooking, kitchen cleaning, food preparation, serving meals, and crafts. Strong and comfortable, keeps hands dry and protected. Each box contains 200 gloves suitable for adults, can be used by both men and women on either hand. Environmental PE material for safe food handling.',
     category: 'gloves',
-    subcategory: 'medical',
+    subcategory: 'examination',
     image: '/products/polythene-gloves-transparent.png',
     colors: [
       { name: 'Transparent', hex: '#E5E7EB', image: '/products/polythene-gloves-transparent.png' },

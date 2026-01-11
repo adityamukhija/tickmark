@@ -37,7 +37,7 @@ function ProductsContent() {
     { id: 'all', name: 'All Gloves' },
     { id: 'industrial', name: 'Industrial' },
     { id: 'domestic', name: 'Domestic' },
-    { id: 'medical', name: 'Medical' },
+    { id: 'examination', name: 'Examination' },
   ];
 
   // Update URL when category changes

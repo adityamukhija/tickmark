@@ -43,7 +43,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const subcategoryNames: Record<string, string> = {
     'industrial': 'Industrial',
     'domestic': 'Domestic',
-    'medical': 'Medical',
+    'examination': 'Examination',
   };
 
   // Get the current image based on selected color
