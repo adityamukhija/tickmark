@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { products } from '@/data/products';
 import { Product } from '@/types/product';
 import ProductDetail from '@/components/ProductDetail';
@@ -49,8 +50,19 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </ol>
         </nav>
 
-        {/* Product Detail Component */}
-        <ProductDetail product={product} />
+        {/* Product Detail Component wrapped in Suspense */}
+        <Suspense fallback={
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <div className="relative aspect-square bg-gray-100 rounded-2xl animate-pulse"></div>
+            <div className="space-y-4">
+              <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+            </div>
+          </div>
+        }>
+          <ProductDetail product={product} />
+        </Suspense>
 
         {/* Related Products Section */}
         <div className="mt-16">
