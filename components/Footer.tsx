@@ -40,18 +40,18 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Categories</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/products?category=gloves" className="text-gray-400 hover:text-white transition-colors">
-                  Rubber Gloves
+                <Link href="/products?category=health" className="text-gray-400 hover:text-white transition-colors">
+                  Health
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=masks" className="text-gray-400 hover:text-white transition-colors">
-                  Safety Masks
+                <Link href="/products?category=safety" className="text-gray-400 hover:text-white transition-colors">
+                  Safety
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=walking-sticks" className="text-gray-400 hover:text-white transition-colors">
-                  Walking Sticks
+                <Link href="/products?category=hygiene" className="text-gray-400 hover:text-white transition-colors">
+                  Hygiene
                 </Link>
               </li>
             </ul>
@@ -102,6 +102,9 @@ export default function Footer() {
     </footer>
   );
 }
+
+
+
 
 
 
