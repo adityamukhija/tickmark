@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { products } from '@/data/products';
 import { Product } from '@/types/product';
 import ProductDetail from '@/components/ProductDetail';
@@ -50,7 +50,18 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       {/* Main product section */}
       <section style={{ padding: '56px 0 80px' }}>
         <div className="wrap">
-          <ProductDetail product={product} />
+          <Suspense fallback={
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+              <div style={{ aspectRatio: '1/1', borderRadius: 'var(--r-lg)', background: 'var(--mint)', animation: 'pulse 1.5s infinite' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 20 }}>
+                <div style={{ height: 32, borderRadius: 8, background: 'var(--mint)', width: '60%' }} />
+                <div style={{ height: 24, borderRadius: 8, background: 'var(--mint)' }} />
+                <div style={{ height: 24, borderRadius: 8, background: 'var(--mint)', width: '80%' }} />
+              </div>
+            </div>
+          }>
+            <ProductDetail product={product} />
+          </Suspense>
         </div>
       </section>
 
