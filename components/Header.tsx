@@ -2,19 +2,25 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [stuck, setStuck] = useState(false);
   const pathname = usePathname();
 
-  const isActive = (path: string) => {
-    if (path === '/') return pathname === '/';
-    return pathname.startsWith(path);
-  };
+  useEffect(() => {
+    const onScroll = () => setStuck(window.scrollY > 16);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-  const navLinks = [
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
+
+  const nav = [
     { href: '/', label: 'Home' },
     { href: '/products', label: 'Products' },
     { href: '/about', label: 'About Us' },
@@ -22,106 +28,191 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-emerald-50/30 via-teal-50/30 to-cyan-50/30 backdrop-blur-sm shadow-md">
-      <nav className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo with layered background */}
-          <Link href="/" className="flex items-center transition-all group relative">
-            <div className="absolute -inset-2 bg-gradient-to-r from-white/50 to-emerald-100/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative p-2 bg-white/80 rounded-lg shadow-sm group-hover:shadow-md transition-all duration-300">
-              <Image
-                src="/products/ name.png"
-                alt="TickMark"
-                width={180}
-                height={45}
-                className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
-                priority
-                unoptimized
-              />
-            </div>
+    <header
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 60,
+        padding: stuck ? '10px 0' : '18px 0',
+        transition: 'padding .25s ease',
+      }}
+    >
+      <div className="wrap">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 24,
+            background: 'rgba(255,255,255,.85)',
+            backdropFilter: 'saturate(160%) blur(14px)',
+            WebkitBackdropFilter: 'saturate(160%) blur(14px)',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--r-xl)',
+            padding: '12px 12px 12px 22px',
+            boxShadow: stuck ? 'var(--shadow-md)' : 'var(--shadow-sm)',
+            transition: 'box-shadow .25s ease',
+          }}
+        >
+          {/* Logo */}
+          <Link href="/" aria-label="TickMark home">
+            <Image
+              src="/logo.png"
+              alt="TickMark"
+              width={210}
+              height={42}
+              style={{ height: 42, width: 'auto', objectFit: 'contain' }}
+              priority
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-2">
-            {navLinks.map((link) => (
+          {/* Desktop nav */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 6 }} className="hidden md:flex">
+            {nav.map(({ href, label }) => (
               <Link
-                key={link.href}
-                href={link.href}
-                className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-300 relative ${
-                  isActive(link.href)
-                    ? 'text-emerald-700 bg-white/80 shadow-md'
-                    : 'text-gray-700 hover:text-emerald-600 hover:bg-white/60 hover:shadow-sm'
-                }`}
+                key={href}
+                href={href}
+                style={{
+                  position: 'relative',
+                  fontWeight: 600,
+                  fontSize: 15,
+                  color: isActive(href) ? 'var(--green-deep)' : 'var(--ink-soft)',
+                  padding: '10px 16px',
+                  borderRadius: 999,
+                  transition: 'color .2s, background .2s',
+                }}
+                className="hover:bg-black/5"
               >
-                {link.label}
-                {isActive(link.href) && (
-                  <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-sm"></span>
+                {label}
+                {isActive(href) && (
+                  <span style={{
+                    position: 'absolute',
+                    left: 16, right: 16, bottom: 4,
+                    height: 2, borderRadius: 2,
+                    background: 'var(--green)',
+                  }} />
                 )}
               </Link>
             ))}
-            
-            {/* Call to Action Button - Layered */}
-            <div className="ml-4 relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-lg opacity-75 group-hover:opacity-100 blur group-hover:blur-sm transition duration-300"></div>
-              <Link
-                href="/products"
-                className="relative px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                Shop Now
-              </Link>
-            </div>
-          </div>
+          </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-white/60 transition-all"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          {/* CTA buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Link
+              href="/contact"
+              className="hidden md:inline-flex"
+              style={{
+                alignItems: 'center',
+                gap: 10,
+                fontWeight: 700,
+                fontSize: 15,
+                padding: '12px 22px',
+                borderRadius: 999,
+                border: '1px solid var(--line-strong)',
+                background: '#fff',
+                color: 'var(--ink)',
+                transition: 'transform .18s, box-shadow .25s, border-color .2s',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Get a Quote
+            </Link>
+            <Link
+              href="/products"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 10,
+                fontWeight: 700,
+                fontSize: 15,
+                padding: '12px 22px',
+                borderRadius: 999,
+                background: 'var(--green)',
+                color: '#fff',
+                boxShadow: '0 10px 22px -10px rgba(14,159,110,.8)',
+                transition: 'background .2s, transform .18s',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>
               </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              Shop Now
+            </Link>
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden"
+              aria-label="Menu"
+              style={{
+                display: 'grid',
+                placeItems: 'center',
+                width: 46, height: 46,
+                borderRadius: 14,
+                background: 'var(--ink)',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ width: 22, height: 22 }}>
+                {mobileOpen
+                  ? <path d="M6 18L18 6M6 6l12 12"/>
+                  : <path d="M3 6h18M3 12h18M3 18h18"/>}
               </svg>
-            )}
-          </button>
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t-2 border-white/40">
-            <div className="space-y-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`block px-4 py-3 rounded-lg font-semibold transition-all ${
-                    isActive(link.href)
-                      ? 'text-emerald-700 bg-white/80 shadow-sm'
-                      : 'text-gray-700 hover:text-emerald-600 hover:bg-white/60'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div style={{
+            marginTop: 8,
+            background: 'rgba(255,255,255,.95)',
+            backdropFilter: 'blur(14px)',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--r-lg)',
+            padding: '12px 8px',
+            boxShadow: 'var(--shadow-md)',
+          }}>
+            {nav.map(({ href, label }) => (
               <Link
-                href="/products"
-                className="block mt-4 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-lg text-center shadow-lg"
-                onClick={() => setMobileMenuOpen(false)}
+                key={href}
+                href={href}
+                onClick={() => setMobileOpen(false)}
+                style={{
+                  display: 'block',
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  fontWeight: 600,
+                  color: isActive(href) ? 'var(--green-deep)' : 'var(--ink-soft)',
+                  background: isActive(href) ? 'var(--green-tint)' : 'transparent',
+                }}
               >
-                Shop Now
+                {label}
               </Link>
-            </div>
+            ))}
+            <Link
+              href="/products"
+              onClick={() => setMobileOpen(false)}
+              style={{
+                display: 'block',
+                margin: '8px 8px 4px',
+                padding: '12px 16px',
+                borderRadius: 12,
+                fontWeight: 700,
+                background: 'var(--green)',
+                color: '#fff',
+                textAlign: 'center',
+              }}
+            >
+              Shop Now
+            </Link>
           </div>
         )}
-      </nav>
+      </div>
     </header>
   );
 }

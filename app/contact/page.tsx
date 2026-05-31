@@ -1,165 +1,169 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-  });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', topic: 'General enquiry', message: '' });
+  const [sent, setSent] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In the future, this can be connected to a backend API
-    alert('Thank you for your message! We will get back to you soon.');
-    setFormData({ name: '', email: '', phone: '', message: '' });
+    setSent(true);
+    setForm({ name: '', email: '', phone: '', topic: 'General enquiry', message: '' });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const field = (id: keyof typeof form, label: string, type = 'text', placeholder = '') => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 16 }}>
+      <label htmlFor={id} style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>{label}</label>
+      <input
+        id={id} type={type} placeholder={placeholder}
+        value={form[id]}
+        onChange={e => setForm(f => ({ ...f, [id]: e.target.value }))}
+        required={['name', 'email', 'message'].includes(id)}
+        style={{
+          fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--ink)',
+          border: '1px solid var(--line-strong)', borderRadius: 12, padding: '13px 15px',
+          background: 'var(--paper)', width: '100%', outline: 'none',
+        }}
+      />
+    </div>
+  );
 
   return (
-    <div className="py-12 min-h-screen">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-gray-900 text-center">
-            Contact Us
-          </h1>
-          <p className="text-center text-gray-700 mb-12">
-            Have a question or want to know more about our products? We're here to help!
+    <div>
+      {/* Page hero */}
+      <section style={{
+        position: 'relative', overflow: 'hidden', padding: '64px 0 56px',
+        borderBottom: '1px solid var(--line)',
+        background: 'radial-gradient(900px 420px at 80% -20%,var(--green-tint),transparent 60%),linear-gradient(180deg,var(--mint-2),var(--paper))',
+      }}>
+        <div className="wrap">
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13.5, color: 'var(--ink-soft)', marginBottom: 14 }}>
+            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <span style={{ color: 'var(--ink-faint)' }}>/</span>
+            <span>Contact Us</span>
+          </div>
+          <span className="eyebrow">Get In Touch</span>
+          <h1 style={{ fontSize: 'clamp(34px,4.4vw,54px)', marginTop: 14 }}>We'd love to hear from you.</h1>
+          <p style={{ fontSize: 18, color: 'var(--ink-soft)', marginTop: 16, maxWidth: 620 }}>
+            Questions about a product, bulk pricing, or certifications? Send us a message and our team will get back within 24 hours.
           </p>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Contact Information */}
-            <div className="bg-white border-2 border-gray-200 rounded-lg p-6 shadow-sm">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-900">Get in Touch</h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-900">Email</h3>
-                  <p className="text-gray-700">tickmark@zohomail.com</p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-900">Phone</h3>
-                  <p className="text-gray-700">9911677477</p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-900">Follow Us</h3>
-                  <div className="flex space-x-4">
-                    <a
-                      href="https://instagram.com/tickmark"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-700 hover:text-blue-600 transition-colors"
-                      aria-label="Instagram"
-                    >
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                      </svg>
-                    </a>
-                    <a
-                      href="https://linkedin.com/company/tickmark"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
-                      aria-label="LinkedIn"
-                    >
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                      </svg>
-                    </a>
-                    <a
-                      href="https://facebook.com/tickmark"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
-                      aria-label="Facebook"
-                    >
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                      </svg>
-                    </a>
+      {/* Contact grid */}
+      <section style={{ padding: '56px 0 96px' }}>
+        <div className="wrap">
+          <div style={{ display: 'grid', gridTemplateColumns: '.95fr 1.05fr', gap: 48, alignItems: 'start' }} className="contact-grid">
+            {/* Info cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              {[
+                {
+                  title: 'Call us', body: '+91 99116 77477', sub: 'Mon–Sat, 9am–7pm IST', href: 'tel:+919911677477',
+                  icon: <path d="M6.6 10.8a15.6 15.6 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/>,
+                },
+                {
+                  title: 'Email us', body: 'tickmark@zohomail.com', sub: 'We reply within 24 hours', href: 'mailto:tickmark@zohomail.com',
+                  icon: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></>,
+                },
+                {
+                  title: 'Visit us', body: 'TickMark Safety Products', sub: 'India', href: null,
+                  icon: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></>,
+                },
+                {
+                  title: 'WhatsApp', body: '+91 99116 77477', sub: 'Chat with us instantly', href: 'https://wa.me/919911677477',
+                  icon: <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>,
+                  isWhatsApp: true,
+                },
+                {
+                  title: 'Buy online', body: 'Amazon, Flipkart & Meesho', sub: 'Delivered across India', href: '/products',
+                  icon: <><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></>,
+                },
+              ].map(({ title, body, sub, href, icon, isWhatsApp }: { title: string; body: string; sub: string; href: string | null; icon: React.ReactNode; isWhatsApp?: boolean }) => (
+                <div key={title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: '#fff', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: 22, boxShadow: 'var(--shadow-sm)' }}>
+                  <span style={{ width: 48, height: 48, borderRadius: 14, display: 'grid', placeItems: 'center', background: isWhatsApp ? '#e8fdf0' : 'var(--green-tint)', color: isWhatsApp ? '#25D366' : 'var(--green-deep)', flex: 'none' }}>
+                    <svg viewBox="0 0 24 24" fill={isWhatsApp ? 'currentColor' : 'none'} stroke={isWhatsApp ? 'none' : 'currentColor'} strokeWidth={isWhatsApp ? 0 : 2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24 }}>{icon}</svg>
+                  </span>
+                  <div>
+                    <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 16, margin: '0 0 4px' }}>{title}</h4>
+                    <p style={{ fontSize: 14.5, color: 'var(--ink-soft)' }}>
+                      {href
+                        ? <a href={href} className="hover:text-green-700" {...(isWhatsApp ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{body}</a>
+                        : body}
+                      <br/><span style={{ color: 'var(--ink-faint)' }}>{sub}</span>
+                    </p>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
 
-            {/* Contact Form */}
-            <div className="bg-white border-2 border-gray-200 rounded-lg p-6 shadow-sm">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-900">Send us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-900 mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  Send Message
-                </button>
-              </form>
+            {/* Form */}
+            <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 'var(--r-lg)', padding: 34, boxShadow: 'var(--shadow-md)' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, marginBottom: 6 }}>Send us a message</h2>
+              <p style={{ color: 'var(--ink-soft)', fontSize: 15, marginBottom: 24 }}>Fill in the form and we'll be in touch shortly.</p>
+
+              {sent ? (
+                <p style={{ fontWeight: 600, color: 'var(--green-deep)', textAlign: 'center', padding: '24px 0' }}>
+                  ✓ Thanks! Your message has been sent — we'll be in touch soon.
+                </p>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="form-row">
+                    {field('name', 'Full name', 'text', 'Your name')}
+                    {field('email', 'Email', 'email', 'you@company.com')}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="form-row">
+                    {field('phone', 'Phone', 'tel', '+91 ...')}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 16 }}>
+                      <label htmlFor="topic" style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>Topic</label>
+                      <select
+                        id="topic"
+                        value={form.topic}
+                        onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
+                        style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--ink)', border: '1px solid var(--line-strong)', borderRadius: 12, padding: '13px 15px', background: 'var(--paper)', outline: 'none' }}
+                      >
+                        {['General enquiry', 'Bulk / wholesale order', 'Product question', 'Certifications', 'Other'].map(o => <option key={o}>{o}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 20 }}>
+                    <label htmlFor="message" style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>Message</label>
+                    <textarea
+                      id="message"
+                      value={form.message}
+                      onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                      required
+                      placeholder="Tell us what you need..."
+                      rows={5}
+                      style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--ink)', border: '1px solid var(--line-strong)', borderRadius: 12, padding: '13px 15px', background: 'var(--paper)', resize: 'vertical', minHeight: 120, outline: 'none', width: '100%' }}
+                    />
+                  </div>
+                  <button type="submit" style={{
+                    display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', gap: 10,
+                    fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 15,
+                    padding: '14px 24px', borderRadius: 999, cursor: 'pointer', border: 'none',
+                    background: 'var(--green)', color: '#fff',
+                    boxShadow: '0 10px 22px -10px rgba(14,159,110,.8)',
+                  }}>
+                    Send Message
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+                      <path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>
+                    </svg>
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <style>{`
+        @media (max-width: 860px) {
+          .contact-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+          .form-row { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
-

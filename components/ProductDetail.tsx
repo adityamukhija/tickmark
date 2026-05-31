@@ -6,164 +6,163 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-interface ProductDetailProps {
-  product: Product;
-}
+const categoryLabels: Record<string, string> = {
+  gloves: 'Gloves',
+  masks: 'Masks',
+  'walking-sticks': 'Walking Sticks',
+  'medical-supplies': 'Medical Supplies',
+  'protective-wear': 'Protective Wear',
+};
 
-export default function ProductDetail({ product }: ProductDetailProps) {
+const subcategoryLabels: Record<string, string> = {
+  industrial: 'Industrial',
+  domestic: 'Domestic',
+  examination: 'Examination',
+};
+
+export default function ProductDetail({ product }: { product: Product }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
-  // Get initial color from URL or default to 0
-  const colorFromUrl = searchParams.get('color');
-  const initialColorIndex = colorFromUrl ? parseInt(colorFromUrl, 10) : 0;
-  
-  const [selectedColorIndex, setSelectedColorIndex] = useState(initialColorIndex);
-  const [imageError, setImageError] = useState(false);
 
-  // Sync with URL on mount and URL changes
+  const initialIdx = parseInt(searchParams.get('color') ?? '0', 10);
+  const [selectedIdx, setSelectedIdx] = useState(isNaN(initialIdx) ? 0 : initialIdx);
+  const [imgError, setImgError] = useState(false);
+
   useEffect(() => {
-    const colorParam = searchParams.get('color');
-    if (colorParam) {
-      const index = parseInt(colorParam, 10);
-      if (!isNaN(index) && product.colors && index >= 0 && index < product.colors.length) {
-        setSelectedColorIndex(index);
+    const param = searchParams.get('color');
+    if (param) {
+      const n = parseInt(param, 10);
+      if (!isNaN(n) && product.colors && n >= 0 && n < product.colors.length) {
+        setSelectedIdx(n);
       }
     }
   }, [searchParams, product.colors]);
 
-  const categoryNames: Record<string, string> = {
-    'gloves': 'Gloves',
-    'masks': 'Masks',
-    'walking-sticks': 'Walking Sticks',
-    'medical-supplies': 'Medical Supplies',
-    'protective-wear': 'Protective Wear',
-  };
-
-  const subcategoryNames: Record<string, string> = {
-    'industrial': 'Industrial',
-    'domestic': 'Domestic',
-    'examination': 'Examination',
-  };
-
-  // Get the current image based on selected color
-  const getCurrentImage = () => {
-    if (product.colors && product.colors.length > 0) {
-      const color = product.colors[selectedColorIndex];
-      if (color.image) {
-        return color.image;
-      }
+  const currentImage = () => {
+    if (product.colors?.length) {
+      const c = product.colors[selectedIdx];
+      if (c?.image) return c.image;
     }
     return product.image;
   };
 
-  const handleColorClick = (index: number) => {
-    setSelectedColorIndex(index);
-    setImageError(false);
-    // Update URL with selected color
+  const handleColor = (idx: number) => {
+    setSelectedIdx(idx);
+    setImgError(false);
     const params = new URLSearchParams(searchParams.toString());
-    if (index > 0) {
-      params.set('color', index.toString());
-    } else {
-      params.delete('color');
-    }
-    router.replace(`/products/${product.id}${params.toString() ? `?${params.toString()}` : ''}`, { scroll: false });
+    idx > 0 ? params.set('color', String(idx)) : params.delete('color');
+    router.replace(`/products/${product.id}${params.size ? `?${params}` : ''}`, { scroll: false });
   };
 
+  const hasBuyLink = product.links.flipkart && product.links.flipkart !== 'https://flipkart.com/product/example';
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-      {/* Product Image */}
-      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg">
-        {!imageError ? (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'start' }} className="detail-grid">
+
+      {/* ── Left: Image ── */}
+      <div style={{
+        position: 'relative', aspectRatio: '1/1', borderRadius: 'var(--r-lg)',
+        overflow: 'hidden', border: '1px solid var(--line)', boxShadow: 'var(--shadow-md)',
+        background: 'radial-gradient(120% 100% at 50% 0%, var(--mint-2), var(--green-tint))',
+        display: 'grid', placeItems: 'center', padding: 40,
+      }}>
+        {!imgError ? (
           <Image
-            src={getCurrentImage()}
+            src={currentImage()}
             alt={product.name}
             fill
-            className="object-contain p-8 transition-all duration-300"
+            style={{ objectFit: 'contain', padding: 40, mixBlendMode: 'multiply' }}
             priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            onError={() => setImageError(true)}
+            sizes="(max-width: 860px) 100vw, 50vw"
+            onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-200">
-            <span className="text-gray-400">Image not available</span>
-          </div>
+          <div style={{ color: 'var(--ink-faint)', fontSize: 14 }}>Image not available</div>
         )}
-        
-        {/* Color indicator badge */}
+
+        {/* Selected colour badge */}
         {product.colors && product.colors.length > 0 && (
-          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-gray-200">
-            <span className="text-sm font-semibold text-gray-700">
-              {product.colors[selectedColorIndex].name}
-            </span>
+          <div style={{
+            position: 'absolute', top: 16, right: 16,
+            background: 'rgba(255,255,255,.92)', backdropFilter: 'blur(6px)',
+            border: '1px solid var(--line)', borderRadius: 999,
+            padding: '6px 14px', fontSize: 13, fontWeight: 600, color: 'var(--ink)',
+            boxShadow: 'var(--shadow-sm)',
+          }}>
+            {product.colors[selectedIdx]?.name}
           </div>
         )}
       </div>
 
-      {/* Product Details */}
-      <div className="flex flex-col">
-        {/* Category & Subcategory Badges */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="inline-block bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-semibold">
-            {categoryNames[product.category] || product.category}
+      {/* ── Right: Info ── */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+
+        {/* Category tags */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+          <span style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
+            color: 'var(--ink-soft)', background: 'var(--mint)', border: '1px solid var(--line)',
+            padding: '5px 14px', borderRadius: 999,
+          }}>
+            {categoryLabels[product.category] ?? product.category}
           </span>
           {product.subcategory && (
-            <span className="inline-block bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-semibold">
-              {subcategoryNames[product.subcategory] || product.subcategory}
+            <span style={{
+              fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
+              color: 'var(--green-deep)', background: 'var(--green-tint)', border: '1px solid rgba(14,159,110,.2)',
+              padding: '5px 14px', borderRadius: 999,
+            }}>
+              {subcategoryLabels[product.subcategory] ?? product.subcategory}
             </span>
           )}
         </div>
 
-        <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-800">{product.name}</h1>
-        <p className="text-lg text-gray-600 mb-8 leading-relaxed">{product.description}</p>
+        {/* Name */}
+        <h1 style={{ fontSize: 'clamp(26px,3vw,38px)', lineHeight: 1.1, marginBottom: 20 }}>
+          {product.name}
+        </h1>
 
-        {/* Color Options */}
+        {/* Description */}
+        <p style={{ fontSize: 16.5, color: 'var(--ink-soft)', lineHeight: 1.7, marginBottom: 32 }}>
+          {product.description}
+        </p>
+
+        {/* Divider */}
+        <div style={{ height: 1, background: 'var(--line)', marginBottom: 32 }} />
+
+        {/* Color options */}
         {product.colors && product.colors.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Available Colors 
-              <span className="text-gray-500 font-normal ml-2">({product.colors.length})</span>
-            </h2>
-            <div className="flex flex-wrap gap-3">
-              {product.colors.map((color, index) => (
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--ink)', marginBottom: 14, letterSpacing: '.04em', textTransform: 'uppercase' }}>
+              Available Colors
+              <span style={{ fontWeight: 400, color: 'var(--ink-faint)', marginLeft: 8, textTransform: 'none', letterSpacing: 0 }}>
+                ({product.colors.length})
+              </span>
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              {product.colors.map((color, idx) => (
                 <button
-                  key={index}
+                  key={idx}
                   type="button"
-                  onClick={() => handleColorClick(index)}
-                  className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 border-2 ${
-                    selectedColorIndex === index
-                      ? 'border-blue-500 bg-blue-50 shadow-md scale-105'
-                      : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-sm'
-                  }`}
+                  onClick={() => handleColor(idx)}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    padding: '8px 16px', borderRadius: 999, cursor: 'pointer',
+                    border: `2px solid ${selectedIdx === idx ? 'var(--green)' : 'var(--line-strong)'}`,
+                    background: selectedIdx === idx ? 'var(--green-tint)' : '#fff',
+                    transition: 'all .18s ease',
+                    fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600,
+                    color: selectedIdx === idx ? 'var(--green-deep)' : 'var(--ink-soft)',
+                  }}
                 >
-                  {/* Color circle */}
-                  <span
-                    className="w-6 h-6 rounded-full shadow-inner relative"
-                    style={{ backgroundColor: color.hex }}
-                  >
-                    {/* Border for light colors */}
-                    <span 
-                      className="absolute inset-0 rounded-full border-2"
-                      style={{ 
-                        borderColor: color.hex === '#FFFFFF' || color.name.toLowerCase() === 'white' 
-                          ? '#E5E7EB' 
-                          : 'transparent' 
-                      }}
-                    />
-                    {/* Shine effect */}
-                    <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent" />
-                  </span>
-                  
-                  {/* Color name */}
-                  <span className={`text-sm font-medium ${
-                    selectedColorIndex === index ? 'text-blue-700' : 'text-gray-700'
-                  }`}>
-                    {color.name}
-                  </span>
-
-                  {/* Checkmark for selected */}
-                  {selectedColorIndex === index && (
-                    <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <span style={{
+                    width: 20, height: 20, borderRadius: '50%', background: color.hex, flex: 'none',
+                    border: color.hex === '#FFFFFF' || color.name.toLowerCase() === 'white' ? '1.5px solid #ddd' : '1.5px solid rgba(0,0,0,.1)',
+                    boxShadow: '0 1px 3px rgba(0,0,0,.15)',
+                  }} />
+                  {color.name}
+                  {selectedIdx === idx && (
+                    <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: 16, height: 16, color: 'var(--green)' }}>
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   )}
@@ -173,67 +172,69 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
         )}
 
-        {/* Buy Now Button */}
-        {product.links.flipkart && (
-          <div className="mb-8">
-            <a
-              href={product.links.flipkart}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative inline-flex items-center justify-center gap-3 py-4 px-8 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden group/btn"
-            >
-              {/* Animated background shimmer */}
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-out" />
-              
-              {/* Glow effect */}
-              <span className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/10 to-transparent" />
-              
-              {/* Shopping bag icon */}
-              <svg 
-                className="w-6 h-6 relative transition-all duration-300 group-hover/btn:scale-110 group-hover/btn:rotate-[-8deg]" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth={2.5}
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" 
-                />
-              </svg>
-              
-              <span className="relative tracking-wide">Buy Now on Flipkart</span>
-              
-              {/* Arrow icon */}
-              <svg 
-                className="w-5 h-5 relative transition-all duration-300 group-hover/btn:translate-x-1.5" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth={2.5}
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" 
-                />
-              </svg>
-            </a>
-          </div>
+        {/* Buy Now */}
+        {hasBuyLink ? (
+          <a
+            href={product.links.flipkart}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+              padding: '16px 32px', borderRadius: 999,
+              background: 'var(--green)', color: '#fff',
+              fontWeight: 700, fontSize: 17,
+              boxShadow: '0 10px 28px -10px rgba(14,159,110,.8)',
+              transition: 'background .2s, transform .18s',
+              marginBottom: 24,
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--green-deep)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--green)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}>
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            Buy Now on Flipkart
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </a>
+        ) : (
+          <Link
+            href="/contact"
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+              padding: '16px 32px', borderRadius: 999,
+              background: 'var(--ink)', color: '#fff',
+              fontWeight: 700, fontSize: 17, marginBottom: 24,
+            }}
+          >
+            Enquire About This Product
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </Link>
         )}
 
-        {/* Back to Products */}
-        <Link
-          href="/products"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+        {/* Back link */}
+        <Link href="/products" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          fontSize: 14.5, fontWeight: 600, color: 'var(--ink-soft)',
+          transition: 'color .2s',
+        }}
+        className="hover:text-green-700"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
           Back to All Products
         </Link>
       </div>
+
+      <style>{`
+        @media (max-width: 860px) {
+          .detail-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+        }
+      `}</style>
     </div>
   );
 }

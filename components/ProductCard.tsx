@@ -1,174 +1,116 @@
-'use client';
-
-import { Product } from '@/types/product';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Link from 'next/link';
+import { Product } from '@/types/product';
 
-interface ProductCardProps {
-  product: Product;
+function getCategoryTag(product: Product): string {
+  if (product.category === 'medical-supplies' || product.category === 'walking-sticks') return 'Health';
+  if (product.subcategory === 'examination') return 'Health';
+  if (product.subcategory === 'industrial') return 'Safety';
+  if (product.subcategory === 'domestic') return 'Hygiene';
+  if (product.category === 'masks') return 'Hygiene';
+  if (product.category === 'protective-wear') return 'Hygiene';
+  return 'Safety';
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
-  const router = useRouter();
-  const [imageError, setImageError] = useState(false);
-  const [hoveredColor, setHoveredColor] = useState<string | null>(null);
-  const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
-
-  // Get the current image based on selected color
-  const getCurrentImage = () => {
-    if (product.colors && product.colors.length > 0) {
-      const color = product.colors[selectedColorIndex];
-      if (color.image) {
-        return color.image;
-      }
-    }
-    return product.image;
-  };
-
-  const handleColorClick = (e: React.MouseEvent, index: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelectedColorIndex(index);
-    setImageError(false);
-  };
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // Navigate to product page with selected color
-    const colorParam = selectedColorIndex > 0 ? `?color=${selectedColorIndex}` : '';
-    router.push(`/products/${product.id}${colorParam}`);
-  };
+export default function ProductCard({ product }: { product: Product }) {
+  const tag = getCategoryTag(product);
+  const hasBuyLink = product.links.flipkart && product.links.flipkart !== 'https://flipkart.com/product/example';
 
   return (
-    <div onClick={handleCardClick} className="block cursor-pointer">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100">
-        <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden flex items-center justify-center">
-          {!imageError ? (
-            <Image
-              src={getCurrentImage()}
-              alt={product.name}
-              fill
-              className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-              onError={() => setImageError(true)}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200">
-              <span className="text-gray-400 text-sm">Image not available</span>
-            </div>
+    <article className="pcard" style={{
+      display: 'flex', flexDirection: 'column',
+      background: '#fff', border: '1px solid var(--line)',
+      borderRadius: 'var(--r-lg)', overflow: 'hidden',
+      boxShadow: 'var(--shadow-sm)', cursor: 'pointer',
+    }}>
+      <Link href={`/products/${product.id}`} style={{ display: 'contents' }}>
+        {/* Thumbnail */}
+        <div className="pcard-thumb" style={{
+          position: 'relative', aspectRatio: '1/1',
+          display: 'grid', placeItems: 'center', padding: 26,
+          background: 'radial-gradient(120% 100% at 50% 0%, var(--mint-2), var(--green-tint))',
+          overflow: 'hidden',
+        }}>
+          <span style={{
+            position: 'absolute', top: 14, left: 14,
+            fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase',
+            color: 'var(--green-deep)', background: '#fff',
+            border: '1px solid var(--line)', padding: '5px 11px', borderRadius: 999,
+          }}>{tag}</span>
+
+          {product.colors && product.colors.length > 1 && (
+            <span style={{
+              position: 'absolute', top: 14, right: 14,
+              fontSize: 12, fontWeight: 600, color: 'var(--ink-soft)',
+              background: 'rgba(255,255,255,.85)', padding: '5px 10px',
+              borderRadius: 999, border: '1px solid var(--line)',
+            }}>{product.colors.length} colors</span>
           )}
-          
-          {/* Color badge overlay */}
+
+          <Image
+            src={product.image}
+            alt={product.name}
+            width={240}
+            height={240}
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', mixBlendMode: 'multiply', filter: 'drop-shadow(0 12px 18px rgba(14,42,63,.16))' }}
+          />
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '22px 22px 8px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+          <h3 style={{ fontSize: 18, lineHeight: 1.25, fontFamily: 'var(--font-display)' }}>{product.name}</h3>
+          <p style={{ fontSize: 14, color: 'var(--ink-soft)', marginTop: 10, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {product.description}
+          </p>
           {product.colors && product.colors.length > 0 && (
-            <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm border border-gray-200">
-              <span className="text-xs font-medium text-gray-600">
-                {product.colors.length} {product.colors.length === 1 ? 'color' : 'colors'}
-              </span>
+            <div style={{ display: 'flex', gap: 7, marginTop: 16, flexWrap: 'wrap' }}>
+              {product.colors.slice(0, 6).map((c) => (
+                <span key={c.name} title={c.name} style={{
+                  width: 18, height: 18, borderRadius: '50%',
+                  background: c.hex, border: '1px solid var(--line-strong)', display: 'block',
+                }} />
+              ))}
+              {product.colors.length > 6 && (
+                <span style={{ fontSize: 11, color: 'var(--ink-faint)', alignSelf: 'center' }}>+{product.colors.length - 6}</span>
+              )}
             </div>
           )}
         </div>
-        
-        <div className="p-5">
-          <h3 className="text-lg font-semibold mb-2 text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-1">
-            {product.name}
-          </h3>
-          <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product.description}</p>
-          
-          {/* Color Options */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Available Colors
-                </span>
-                {hoveredColor && (
-                  <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-0.5 rounded-full animate-fadeIn">
-                    {hoveredColor}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                {product.colors.map((color, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onMouseEnter={() => setHoveredColor(color.name)}
-                    onMouseLeave={() => setHoveredColor(null)}
-                    onClick={(e) => handleColorClick(e, index)}
-                    className={`group/color relative w-7 h-7 rounded-full transition-all duration-200 hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                      selectedColorIndex === index ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  >
-                    {/* Border for light colors */}
-                    <span 
-                      className="absolute inset-0 rounded-full border-2"
-                      style={{ 
-                        borderColor: color.hex === '#FFFFFF' || color.name.toLowerCase() === 'white' 
-                          ? '#E5E7EB' 
-                          : 'transparent' 
-                      }}
-                    />
-                    {/* Shine effect */}
-                    <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/30 to-transparent" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Buy Now Button */}
-          {product.links.flipkart && (
-            <a
-              href={product.links.flipkart}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative w-full flex items-center justify-center gap-3 py-3.5 px-6 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden group/btn z-10"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Animated background shimmer */}
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-out" />
-              
-              {/* Glow effect */}
-              <span className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/10 to-transparent" />
-              
-              {/* Shopping bag icon */}
-              <svg 
-                className="w-5 h-5 relative transition-all duration-300 group-hover/btn:scale-110 group-hover/btn:rotate-[-8deg]" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth={2.5}
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" 
-                />
-              </svg>
-              
-              <span className="relative text-base tracking-wide">Buy Now</span>
-              
-              {/* Arrow icon */}
-              <svg 
-                className="w-5 h-5 relative transition-all duration-300 group-hover/btn:translate-x-1.5" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth={2.5}
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" 
-                />
-              </svg>
-            </a>
-          )}
-        </div>
+      </Link>
+
+      {/* Footer action */}
+      <div style={{ padding: '16px 22px 22px' }}>
+        {hasBuyLink ? (
+          <a
+            href={product.links.flipkart}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pcard-buy"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              fontWeight: 700, fontSize: 14,
+              background: 'var(--green)', color: '#fff',
+              padding: '11px 18px', borderRadius: 999, transition: 'background .2s',
+            }}
+          >
+            Buy Now
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
+              <path d="M7 17 17 7M9 7h8v8"/>
+            </svg>
+          </a>
+        ) : (
+          <Link href="/contact" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            fontWeight: 700, fontSize: 14, background: '#fff', color: 'var(--ink)',
+            border: '1px solid var(--line-strong)', padding: '11px 18px', borderRadius: 999,
+          }}>
+            Enquire
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </Link>
+        )}
       </div>
-    </div>
+    </article>
   );
 }

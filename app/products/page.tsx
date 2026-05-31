@@ -1,224 +1,138 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Link from 'next/link';
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import { Product } from '@/types/product';
 
-function ProductsContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  
-  const categoryFromUrl = searchParams.get('category') || 'all';
-  const subcategoryFromUrl = searchParams.get('subcategory') || 'all';
-  
-  const [selectedCategory, setSelectedCategory] = useState<string>(categoryFromUrl);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(subcategoryFromUrl);
+type DesignCat = 'all' | 'health' | 'safety' | 'hygiene';
 
-  // Sync state with URL on mount and URL changes
-  useEffect(() => {
-    const category = searchParams.get('category') || 'all';
-    const subcategory = searchParams.get('subcategory') || 'all';
-    setSelectedCategory(category);
-    setSelectedSubcategory(subcategory);
-  }, [searchParams]);
-
-  const categories = [
-    { id: 'all', name: 'All Products' },
-    { id: 'gloves', name: 'Gloves' },
-    { id: 'masks', name: 'Masks' },
-    { id: 'walking-sticks', name: 'Walking Sticks' },
-    { id: 'medical-supplies', name: 'Medical Supplies' },
-    { id: 'protective-wear', name: 'Protective Wear' },
-  ];
-
-  const gloveSubcategories = [
-    { id: 'all', name: 'All Gloves' },
-    { id: 'industrial', name: 'Industrial' },
-    { id: 'domestic', name: 'Domestic' },
-    { id: 'examination', name: 'Examination' },
-  ];
-
-  // Update URL when category changes
-  const handleCategoryChange = (categoryId: string) => {
-    const params = new URLSearchParams();
-    if (categoryId !== 'all') {
-      params.set('category', categoryId);
-    }
-    // Reset subcategory when changing category
-    const queryString = params.toString();
-    router.push(`/products${queryString ? `?${queryString}` : ''}`, { scroll: false });
-  };
-
-  // Update URL when subcategory changes
-  const handleSubcategoryChange = (subcategoryId: string) => {
-    const params = new URLSearchParams();
-    params.set('category', selectedCategory);
-    if (subcategoryId !== 'all') {
-      params.set('subcategory', subcategoryId);
-    }
-    router.push(`/products?${params.toString()}`, { scroll: false });
-  };
-
-  const filteredProducts: Product[] = products.filter((p) => {
-    // Filter by category
-    if (selectedCategory !== 'all' && p.category !== selectedCategory) {
-      return false;
-    }
-    // Filter by subcategory (only for gloves)
-    if (selectedCategory === 'gloves' && selectedSubcategory !== 'all') {
-      return p.subcategory === selectedSubcategory;
-    }
-    return true;
-  });
-
-  // Get top products filtered by current category/subcategory
-  const topProducts = products.filter(p => {
-    if (!p.isTopProduct) return false;
-    
-    // Filter by category
-    if (selectedCategory !== 'all' && p.category !== selectedCategory) {
-      return false;
-    }
-    
-    // Filter by subcategory (only for gloves)
-    if (selectedCategory === 'gloves' && selectedSubcategory !== 'all') {
-      return p.subcategory === selectedSubcategory;
-    }
-    
-    return true;
-  });
-
-  const showTopProducts = topProducts.length > 0;
-
-  return (
-    <>
-      <h1 className="text-4xl font-bold mb-8 text-gray-900 text-center">
-        Our Products
-      </h1>
-      <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">
-        Explore our wide range of safety products. Click on any product to view details 
-        and purchase directly from Flipkart.
-      </p>
-
-      {/* Category Filter */}
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => handleCategoryChange(category.id)}
-            className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-              selectedCategory === category.id
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
-                : 'bg-white border-2 border-gray-300 text-gray-800 hover:border-blue-500 hover:text-blue-600 hover:shadow-md'
-            }`}
-          >
-            {category.name}
-          </button>
-        ))}
-      </div>
-
-      {/* Subcategory Filter for Gloves */}
-      {selectedCategory === 'gloves' && (
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {gloveSubcategories.map((sub) => (
-            <button
-              key={sub.id}
-              onClick={() => handleSubcategoryChange(sub.id)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                selectedSubcategory === sub.id
-                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
-                  : 'bg-gray-100 border border-gray-300 text-gray-700 hover:border-emerald-500 hover:text-emerald-600 hover:shadow-sm'
-              }`}
-            >
-              {sub.name}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Add margin when no subcategory filter */}
-      {selectedCategory !== 'gloves' && <div className="mb-6" />}
-
-      {/* Top Products Section */}
-      {showTopProducts && topProducts.length > 0 && (
-        <div className="mb-16">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-amber-300"></div>
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <svg className="w-7 h-7 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <span>Top Products</span>
-              <svg className="w-7 h-7 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            </h2>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-amber-300"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-8">
-            {topProducts.map((product) => (
-              <div key={product.id} className="relative">
-                {/* Top Product Badge */}
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
-                  <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 text-white px-4 py-1.5 rounded-full shadow-lg border-2 border-amber-300 flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span className="font-bold text-sm uppercase tracking-wide">Top Product</span>
-                  </div>
-                </div>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-12"></div>
-        </div>
-      )}
-
-      {/* Results count */}
-      <div className="text-center mb-8">
-        <span className="text-gray-600">
-          Showing <span className="font-semibold text-gray-800">{filteredProducts.length}</span> {filteredProducts.length === 1 ? 'product' : 'products'}
-          {selectedCategory !== 'all' && (
-            <span> in <span className="font-semibold text-blue-600">{categories.find(c => c.id === selectedCategory)?.name}</span></span>
-          )}
-          {selectedCategory === 'gloves' && selectedSubcategory !== 'all' && (
-            <span> → <span className="font-semibold text-emerald-600">{gloveSubcategories.find(s => s.id === selectedSubcategory)?.name}</span></span>
-          )}
-        </span>
-      </div>
-
-      {/* Products Grid */}
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-700 text-lg">No products found in this category.</p>
-        </div>
-      )}
-    </>
-  );
+function getDesignCat(p: Product): DesignCat {
+  if (p.category === 'medical-supplies' || p.category === 'walking-sticks') return 'health';
+  if (p.subcategory === 'examination') return 'health';
+  if (p.subcategory === 'industrial') return 'safety';
+  if (p.subcategory === 'domestic') return 'hygiene';
+  if (p.category === 'masks') return 'hygiene';
+  if (p.category === 'protective-wear') return 'hygiene';
+  return 'safety';
 }
 
+const CHIPS: { id: DesignCat; label: string }[] = [
+  { id: 'all', label: 'All Products' },
+  { id: 'health', label: 'Health' },
+  { id: 'safety', label: 'Safety' },
+  { id: 'hygiene', label: 'Hygiene' },
+];
+
 export default function ProductsPage() {
+  const [active, setActive] = useState<DesignCat>('all');
+
+  const filtered = products.filter(p => active === 'all' || getDesignCat(p) === active);
+
   return (
-    <div className="py-12 min-h-screen">
-      <div className="container mx-auto px-4">
-        <Suspense fallback={
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading products...</p>
+    <div>
+      {/* Page hero */}
+      <section style={{
+        position: 'relative', overflow: 'hidden', padding: '64px 0 56px',
+        borderBottom: '1px solid var(--line)',
+        background: 'radial-gradient(900px 420px at 80% -20%,var(--green-tint),transparent 60%),linear-gradient(180deg,var(--mint-2),var(--paper))',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 0, opacity: .05,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath fill='none' stroke='%230E2A3F' stroke-width='2.4' d='M26 41 l9 9 19-21'/%3E%3C/svg%3E")`,
+          backgroundSize: '80px 80px',
+        }} />
+        <div className="wrap" style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13.5, color: 'var(--ink-soft)', marginBottom: 14 }}>
+            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <span style={{ color: 'var(--ink-faint)' }}>/</span>
+            <span>Products</span>
           </div>
-        }>
-          <ProductsContent />
-        </Suspense>
-      </div>
+          <span className="eyebrow">Our Catalogue</span>
+          <h1 style={{ fontSize: 'clamp(34px,4.4vw,54px)', marginTop: 14 }}>Quality safety products for every workplace.</h1>
+          <p style={{ fontSize: 18, color: 'var(--ink-soft)', marginTop: 16, maxWidth: 620 }}>
+            From medical-grade examination gloves to industrial PPE — browse our full range, all quality-assured and available on Amazon, Flipkart and Meesho.
+          </p>
+
+          {/* Filter chips */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 34 }}>
+            {CHIPS.map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => setActive(id)}
+                style={{
+                  fontWeight: 600, fontSize: 14,
+                  padding: '10px 20px', borderRadius: 999, cursor: 'pointer',
+                  transition: 'all .2s',
+                  background: active === id ? 'var(--ink)' : '#fff',
+                  color: active === id ? '#fff' : 'var(--ink-soft)',
+                  border: `1px solid ${active === id ? 'var(--ink)' : 'var(--line-strong)'}`,
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Product grid */}
+      <section style={{ padding: '54px 0 96px' }}>
+        <div className="wrap">
+          <p style={{ fontSize: 14, color: 'var(--ink-faint)', marginBottom: 32 }}>
+            Showing <strong style={{ color: 'var(--ink)' }}>{filtered.length}</strong> {filtered.length === 1 ? 'product' : 'products'}
+          </p>
+          {filtered.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24 }} className="products-grid">
+              {filtered.map(p => <ProductCard key={p.id} product={p} />)}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-soft)' }}>No products in this category.</div>
+          )}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section style={{ padding: '0 0 96px' }}>
+        <div className="wrap">
+          <div style={{
+            position: 'relative', overflow: 'hidden', borderRadius: 'var(--r-xl)',
+            background: 'linear-gradient(135deg,var(--green-deep),var(--green))',
+            color: '#fff', padding: '60px', display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', gap: 40, flexWrap: 'wrap',
+            boxShadow: 'var(--shadow-lg)',
+          }}>
+            <div style={{ position: 'absolute', right: -60, top: -60, width: 340, height: 340, borderRadius: '50%', background: 'rgba(255,255,255,.10)' }} />
+            <div style={{ position: 'relative' }}>
+              <h2 style={{ color: '#fff', fontSize: 'clamp(24px,3vw,36px)' }}>Need bulk quantities or a custom order?</h2>
+              <p style={{ color: 'rgba(255,255,255,.88)', marginTop: 12, fontSize: 17 }}>Get tailored pricing, certification documents and dedicated support within 24 hours.</p>
+            </div>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', position: 'relative' }}>
+              <Link href="/contact" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                fontWeight: 700, fontSize: 15, padding: '14px 24px', borderRadius: 999,
+                background: '#fff', color: 'var(--green-deep)',
+              }}>Request a Quote</Link>
+              <a href="tel:+919911677477" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                fontWeight: 700, fontSize: 15, padding: '14px 24px', borderRadius: 999,
+                background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,.6)',
+              }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+                  <path d="M6.6 10.8a15.6 15.6 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/>
+                </svg>
+                Call Us
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <style>{`
+        @media (max-width: 1080px) { .products-grid { grid-template-columns: repeat(2,1fr) !important; } }
+        @media (max-width: 560px) { .products-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
     </div>
   );
 }

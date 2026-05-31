@@ -164,7 +164,7 @@ export const products: Product[] = [
   {
     id: '19',
     name: 'Disposable Polyethylene Gloves',
-    description: 'High-quality disposable plastic gloves made of durable polyethylene material. 100% latex and powder-free, non-sterile, non-toxic, and hygienic with no rubber odor. Perfect for cooking, kitchen cleaning, food preparation, serving meals, and crafts. Strong and comfortable, keeps hands dry and protected. Each box contains 200 gloves suitable for adults, can be used by both men and women on either hand. Environmental PE material for safe food handling.',
+    description: 'High-quality disposable plastic gloves made of durable polyethylene material. 100% latex and powder-free, non-sterile, non-toxic, and hygienic with no rubber odor. Perfect for cooking, kitchen cleaning, food preparation, serving meals, and crafts. Strong and comfortable, keeps hands dry and protected. Environmental PE material for safe food handling.',
     category: 'gloves',
     subcategory: 'examination',
     image: '/products/polythene-gloves-transparent.png',
@@ -178,7 +178,7 @@ export const products: Product[] = [
   {
     id: '5',
     name: 'Surgical Masks',
-    description: '3-ply surgical masks with high filtration efficiency.',
+    description: '3-ply surgical masks with high filtration efficiency. Features adjustable nose clip and soft ear loops for all-day comfort. Breathable non-woven fabric provides effective filtration for hospital, clinic, and daily use.',
     category: 'masks',
     image: '/products/surgicalmasks.png',
     colors: [
@@ -217,19 +217,6 @@ export const products: Product[] = [
     },
   },
   {
-    id: '9',
-    name: 'Rapid Test Kits',
-    description: 'Fast and accurate rapid test kits for various health screenings. Easy to use and reliable.',
-    category: 'medical-supplies',
-    image: '/products/rapid-test-kits.png',
-    colors: [
-      { name: 'White', hex: '#FFFFFF' },
-    ],
-    links: {
-      flipkart: 'https://flipkart.com/product/example',
-    },
-  },
-  {
     id: '20',
     name: 'Electrical Heating Pad',
     description: 'Innovative electrical heating pad for pain relief and targeted warmth to soothe aches and discomfort. Perfect for managing pain in the back, neck, shoulders, abdomen, and other body areas. Features customizable heat settings to suit your needs and delivers consistent warmth to promote relaxation and recovery. Designed for convenience and comfort. Available in multiple colors and designs.',
@@ -249,21 +236,6 @@ export const products: Product[] = [
     colors: [
       { name: 'Blue', hex: '#3B82F6' },
       { name: 'White', hex: '#FFFFFF' },
-    ],
-    links: {
-      flipkart: 'https://flipkart.com/product/example',
-    },
-  },
-  {
-    id: '11',
-    name: 'Protective Aprons',
-    description: 'Disposable protective aprons for medical, food service, and industrial use. Water-resistant and durable.',
-    category: 'protective-wear',
-    image: '/products/aprons.png',
-    colors: [
-      { name: 'White', hex: '#FFFFFF' },
-      { name: 'Blue', hex: '#3B82F6' },
-      { name: 'Green', hex: '#22C55E' },
     ],
     links: {
       flipkart: 'https://flipkart.com/product/example',
